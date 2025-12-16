@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Status Warna</title>
+    <style>
+      body {
+        margin: 0;
+        height: 100vh;
+        display: grid;
+        place-items: center;
+        font-family: system-ui, Arial;
+        transition: background 200ms ease;
+      }
+      .card {
+        background: rgba(255, 255, 255, 0.88);
+        padding: 20px;
+        border-radius: 16px;
+        text-align: center;
+        min-width: 280px;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+      }
+      h1 {
+        margin: 0 0 12px;
+        font-size: 20px;
+      }
+      .btns {
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+        flex-wrap: wrap;
+        margin-top: 10px;
+      }
+      button {
+        border: 0;
+        padding: 12px 18px;
+        border-radius: 12px;
+        cursor: pointer;
+        font-size: 16px;
+      }
+      input {
+        width: 100%;
+        padding: 12px 14px;
+        border-radius: 12px;
+        border: 1px solid rgba(0, 0, 0, 0.2);
+        font-size: 16px;
+      }
+      .muted {
+        opacity: 0.7;
+        margin-top: 12px;
+        font-size: 13px;
+      }
+      .hidden {
+        display: none;
+      }
+      .err {
+        color: #b00020;
+        font-size: 13px;
+        margin-top: 10px;
+      }
+      .btns-corner {
+        position: fixed;
+        left: 18px;
+        bottom: 18px;
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        z-index: 9999;
+      }
+
+      .btn-circle {
+        width: 64px;
+        height: 64px;
+        border-radius: 99px;
+        border: 0;
+        cursor: pointer;
+
+        /* transparan */
+        background: transparent;
+        box-shadow: none;
+
+        display: grid;
+        place-items: center;
+
+        font-size: 20px;
+        line-height: 1;
+
+        /* biar tombol tetap "kerasa" saat hover */
+        transition: transform 120ms ease, filter 120ms ease, opacity 120ms ease;
+        opacity: 0.95;
+      }
+
+      .btn-circle:hover {
+        filter: drop-shadow(0 10px 18px rgba(0, 0, 0, 0.35));
+        opacity: 1;
+      }
+
+      .btn-circle:active {
+        transform: scale(0.95);
+        filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.25));
+      }
+
+      .btn-circle:focus {
+        outline: none;
+      }
+      .btn-circle:focus-visible {
+        outline: 2px solid rgba(255, 255, 255, 0.6);
+        outline-offset: 4px;
+        border-radius: 999px;
+      }
+
+      #flash {
+        position: fixed;
+        inset: 0;
+        background: white;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 80ms ease;
+        z-index: 999999;
+      }
+
+      #flash.on {
+        opacity: 1;
+      }
+
+      /* wrapper tiap tombol utama */
+      .menu {
+        position: relative;
+        padding-top: 90px; /* bikin area hover ke atas */
+        margin-top: -90px; /* biar posisi visual tetap */
+      }
+
+      /* pop up emoji (muncul di atas, vertikal) */
+      .submenu {
+        position: absolute;
+        left: 50%;
+        bottom: 78px; /* jarak dari tombol utama */
+        padding-bottom: 10px;  /* area klik/hover lebih lega */
+        transform: translateX(-50%);
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 180ms ease 200ms, transform 180ms ease 200ms;
+      }
+
+      .menu:hover .submenu {
+        opacity: 1;
+        pointer-events: auto;
+        transform: translateX(-50%) translateY(-6px);
+        transition-delay: 0ms; /* kalau hover, muncul langsung */
+      }
+
+      /* tombol emoji popup (lebih kecil sedikit) */
+      .subbtn {
+        width: 56px;
+        height: 56px;
+        font-size: 28px;
+      }
+
+      /* emoji di tengah layar */
+      #centerEmoji {
+        position: fixed;
+        inset: 0;
+        display: grid;
+        place-items: center;
+        z-index: 9998;
+        pointer-events: none;
+        font-size: 96px;
+        opacity: 0;
+        transition: opacity 150ms ease;
+        text-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
+      }
+
+      #centerEmoji.show {
+        opacity: 1;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="card" id="login">
+      <h1>Masuk (PIN kantor)</h1>
+      <input id="pin" type="password" placeholder="Masukkan PIN" />
+      <div class="btns">
+        <button onclick="login()">Masuk</button>
+      </div>
+      <div class="err" id="err"></div>
+      <div class="muted">Tidak ada akun. Cukup PIN bersama.</div>
+    </div>
+
+    <div class="hidden" id="app">
+      <div class="btns-corner">
+        <!-- HIJAU -->
+        <div class="menu">
+          <button class="btn-circle" aria-label="Hijau">🟢</button>
+          <div class="submenu">
+            <button
+              class="btn-circle subbtn"
+              aria-label="Hijau - senyum"
+              onclick="pick('green','HIJAU','😁')"
+            >
+              😁
+            </button>
+            <button
+              class="btn-circle subbtn"
+              aria-label="Hijau - cool"
+              onclick="pick('green','HIJAU','😎')"
+            >
+              😎
+            </button>
+          </div>
+        </div>
+
+        <!-- KUNING -->
+        <div class="menu">
+          <button class="btn-circle" aria-label="Kuning">🟡</button>
+          <div class="submenu">
+            <button
+              class="btn-circle subbtn"
+              aria-label="Kuning - datar"
+              onclick="pick('gold','KUNING','😐')"
+            >
+              😐
+            </button>
+            <button
+              class="btn-circle subbtn"
+              aria-label="Kuning - sebal"
+              onclick="pick('gold','KUNING','😒')"
+            >
+              😒
+            </button>
+          </div>
+        </div>
+
+        <!-- MERAH -->
+        <div class="menu">
+          <button class="btn-circle" aria-label="Merah">🔴</button>
+          <div class="submenu">
+            <button
+              class="btn-circle subbtn"
+              aria-label="Merah - bahaya"
+              onclick="pick('red','MERAH','‼️')"
+            >
+              ‼️
+            </button>
+            <button
+              class="btn-circle subbtn"
+              aria-label="Merah - panik"
+              onclick="pick('red','MERAH','😱')"
+            >
+              😱
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="centerEmoji"></div>
+
+    <div id="flash"></div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+      const socket = io();
+      let blinkInterval = null;
+      let blinkTimeout = null;
+      let lastColor = "green";
+      let blinkOn = false;
+
+      function apply({ color, emoji }) {
+        lastColor = color;
+        startBlinkingFor05s();
+        if (emoji) showCenterEmoji(emoji);
+      }
+
+      function startBlinkingFor05s() {
+        // stop yang lama kalau ada
+        if (blinkInterval) clearInterval(blinkInterval);
+        if (blinkTimeout) clearTimeout(blinkTimeout);
+
+        blinkOn = false;
+        document.body.style.background = lastColor;
+
+        // mulai blink putih <-> warna
+        blinkInterval = setInterval(() => {
+          blinkOn = !blinkOn;
+          document.body.style.background = blinkOn ? "white" : lastColor;
+        }, 300); // atur speed blink di sini
+
+        // berhenti setelah 10 detik, lalu set ke warna terakhir
+        blinkTimeout = setTimeout(() => {
+          clearInterval(blinkInterval);
+          blinkInterval = null;
+          document.body.style.background = lastColor;
+        }, 5000);
+      }
+
+      function pick(color, label, emoji) {
+        // kirim ke server (realtime ke semua)
+        socket.emit("status:set", { color, label, emoji });
+      }
+
+      function showCenterEmoji(emoji) {
+        const el = document.getElementById("centerEmoji");
+        el.textContent = emoji;
+        el.classList.add("show");
+
+        // tampil sebentar (misal 2.5 detik), lalu hilang
+        clearTimeout(window.__emojiT);
+        window.__emojiT = setTimeout(() => {
+          el.classList.remove("show");
+        }, 2500);
+      }
+
+      function login() {
+        const pin = document.getElementById("pin").value;
+        document.getElementById("err").textContent = "";
+
+        socket.emit("auth:pin", pin, (res) => {
+          if (res && res.ok) {
+            document.getElementById("login").classList.add("hidden");
+            document.getElementById("app").classList.remove("hidden");
+          } else {
+            document.getElementById("err").textContent = "PIN salah.";
+          }
+        });
+      }
+
+      function setStatus(color, label) {
+        socket.emit("status:set", { color, label });
+      }
+
+      socket.on("status:update", apply);
+
+      document.getElementById("pin").addEventListener("keydown", (e) => {
+        if (e.key === "Enter") login();
+      });
+    </script>
+  </body>
+</html>
