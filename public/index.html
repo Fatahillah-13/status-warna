@@ -59,12 +59,15 @@
         font-size: 13px;
         margin-top: 10px;
       }
+
+      /* tombol utama di pojok kiri bawah (vertikal) */
       .btns-corner {
         position: fixed;
         left: 18px;
         bottom: 18px;
         display: flex;
-        gap: 12px;
+        flex-direction: column;
+        gap: 4px;
         align-items: center;
         z-index: 9999;
       }
@@ -76,7 +79,6 @@
         border: 0;
         cursor: pointer;
 
-        /* transparan */
         background: transparent;
         box-shadow: none;
 
@@ -86,7 +88,6 @@
         font-size: 20px;
         line-height: 1;
 
-        /* biar tombol tetap "kerasa" saat hover */
         transition: transform 120ms ease, filter 120ms ease, opacity 120ms ease;
         opacity: 0.95;
       }
@@ -110,6 +111,7 @@
         border-radius: 999px;
       }
 
+      /* flash putih */
       #flash {
         position: fixed;
         inset: 0;
@@ -119,39 +121,38 @@
         transition: opacity 80ms ease;
         z-index: 999999;
       }
-
       #flash.on {
         opacity: 1;
       }
 
-      /* wrapper tiap tombol utama */
+      /* wrapper tiap tombol utama + area hover ke kanan supaya submenu gampang diklik */
       .menu {
         position: relative;
-        padding-top: 90px; /* bikin area hover ke atas */
-        margin-top: -90px; /* biar posisi visual tetap */
+        padding-right: 160px; /* area hover ke kanan */
+        margin-right: -160px; /* posisi visual tetap */
       }
 
-      /* pop up emoji (muncul di atas, vertikal) */
-      .submenu {
+      /* submenu muncul ke kanan, tetap vertikal */
+      .menu .submenu {
         position: absolute;
-        left: 50%;
-        bottom: 78px; /* jarak dari tombol utama */
-        padding-bottom: 10px;  /* area klik/hover lebih lega */
-        transform: translateX(-50%);
+        left: 72px; /* jarak submenu dari tombol utama */
+        top: 50%;
+        transform: translateY(-50%);
+
         display: flex;
-        flex-direction: column;
+        flex-direction: row;
         gap: 10px;
+        align-items: center;
 
         opacity: 0;
         pointer-events: none;
-        transition: opacity 180ms ease 200ms, transform 180ms ease 200ms;
+        transition: opacity 160ms ease, transform 160ms ease;
       }
 
       .menu:hover .submenu {
         opacity: 1;
         pointer-events: auto;
-        transform: translateX(-50%) translateY(-6px);
-        transition-delay: 0ms; /* kalau hover, muncul langsung */
+        transform: translateY(-50%) translateX(8px); /* geser dikit ke kanan saat muncul */
       }
 
       /* tombol emoji popup (lebih kecil sedikit) */
@@ -167,20 +168,37 @@
         inset: 0;
         display: grid;
         place-items: center;
-        z-index: 9998;
         pointer-events: none;
         font-size: 96px;
         opacity: 0;
         transition: opacity 150ms ease;
         text-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
+        z-index: 3;
       }
-
       #centerEmoji.show {
         opacity: 1;
+      }
+
+      /* layar status (hanya aktif setelah login) */
+      #stage {
+        position: fixed;
+        inset: 0;
+        background: #f3f4f6;
+        z-index: 0;
+      }
+      #stage.hidden {
+        display: none;
+      }
+
+      /* login card di atas stage */
+      #login {
+        position: relative;
+        z-index: 2;
       }
     </style>
   </head>
   <body>
+    <div id="stage" class="hidden"></div>
     <div class="card" id="login">
       <h1>Masuk (PIN kantor)</h1>
       <input id="pin" type="password" placeholder="Masukkan PIN" />
@@ -190,7 +208,6 @@
       <div class="err" id="err"></div>
       <div class="muted">Tidak ada akun. Cukup PIN bersama.</div>
     </div>
-
     <div class="hidden" id="app">
       <div class="btns-corner">
         <!-- HIJAU -->
@@ -257,11 +274,8 @@
         </div>
       </div>
     </div>
-
     <div id="centerEmoji"></div>
-
     <div id="flash"></div>
-
     <script src="/socket.io/socket.io.js"></script>
     <script>
       const socket = io();
@@ -269,8 +283,10 @@
       let blinkTimeout = null;
       let lastColor = "green";
       let blinkOn = false;
+      let isAuthed = false;
 
       function apply({ color, emoji }) {
+        if (!isAuthed) return;
         lastColor = color;
         startBlinkingFor05s();
         if (emoji) showCenterEmoji(emoji);
@@ -282,12 +298,14 @@
         if (blinkTimeout) clearTimeout(blinkTimeout);
 
         blinkOn = false;
-        document.body.style.background = lastColor;
+        document.getElementById("stage").style.background = lastColor;
 
         // mulai blink putih <-> warna
         blinkInterval = setInterval(() => {
           blinkOn = !blinkOn;
-          document.body.style.background = blinkOn ? "white" : lastColor;
+          document.getElementById("stage").style.background = blinkOn
+            ? "white"
+            : lastColor;
         }, 300); // atur speed blink di sini
 
         // berhenti setelah 10 detik, lalu set ke warna terakhir
@@ -307,12 +325,6 @@
         const el = document.getElementById("centerEmoji");
         el.textContent = emoji;
         el.classList.add("show");
-
-        // tampil sebentar (misal 2.5 detik), lalu hilang
-        clearTimeout(window.__emojiT);
-        window.__emojiT = setTimeout(() => {
-          el.classList.remove("show");
-        }, 2500);
       }
 
       function login() {
@@ -323,6 +335,8 @@
           if (res && res.ok) {
             document.getElementById("login").classList.add("hidden");
             document.getElementById("app").classList.remove("hidden");
+            document.getElementById("stage").classList.remove("hidden");
+            isAuthed = true;
           } else {
             document.getElementById("err").textContent = "PIN salah.";
           }
