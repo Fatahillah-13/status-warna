@@ -4,6 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>Status Warna</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
       body {
         margin: 0;
@@ -11,8 +12,9 @@
         display: grid;
         place-items: center;
         font-family: system-ui, Arial;
-        transition: background 200ms ease;
       }
+
+      /* login card */
       .card {
         background: rgba(255, 255, 255, 0.88);
         padding: 20px;
@@ -60,109 +62,24 @@
         margin-top: 10px;
       }
 
-      /* tombol utama di pojok kiri bawah (vertikal) */
-      .btns-corner {
-        position: fixed;
-        left: 18px;
-        bottom: 18px;
-        display: flex;
-        flex-direction: column;
-        gap: 4px;
-        align-items: center;
-        z-index: 9999;
-      }
-
-      .btn-circle {
-        width: 64px;
-        height: 64px;
-        border-radius: 99px;
-        border: 0;
-        cursor: pointer;
-
-        background: transparent;
-        box-shadow: none;
-
-        display: grid;
-        place-items: center;
-
-        font-size: 20px;
-        line-height: 1;
-
-        transition: transform 120ms ease, filter 120ms ease, opacity 120ms ease;
-        opacity: 0.95;
-      }
-
-      .btn-circle:hover {
-        filter: drop-shadow(0 10px 18px rgba(0, 0, 0, 0.35));
-        opacity: 1;
-      }
-
-      .btn-circle:active {
-        transform: scale(0.95);
-        filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.25));
-      }
-
-      .btn-circle:focus {
-        outline: none;
-      }
-      .btn-circle:focus-visible {
-        outline: 2px solid rgba(255, 255, 255, 0.6);
-        outline-offset: 4px;
-        border-radius: 999px;
-      }
-
-      /* flash putih */
-      #flash {
+      /* layer background yang diblink */
+      #stage {
         position: fixed;
         inset: 0;
-        background: white;
-        opacity: 0;
-        pointer-events: none;
-        transition: opacity 80ms ease;
-        z-index: 999999;
+        background: #000; /* netral sebelum login */
+        z-index: 0;
       }
-      #flash.on {
-        opacity: 1;
+      #stage.hidden {
+        display: none;
       }
 
-      /* wrapper tiap tombol utama + area hover ke kanan supaya submenu gampang diklik */
-      .menu {
+      /* pastikan login di atas stage */
+      #login {
         position: relative;
-        padding-right: 160px; /* area hover ke kanan */
-        margin-right: -160px; /* posisi visual tetap */
+        z-index: 2;
       }
 
-      /* submenu muncul ke kanan, tetap vertikal */
-      .menu .submenu {
-        position: absolute;
-        left: 72px; /* jarak submenu dari tombol utama */
-        top: 50%;
-        transform: translateY(-50%);
-
-        display: flex;
-        flex-direction: row;
-        gap: 10px;
-        align-items: center;
-
-        opacity: 0;
-        pointer-events: none;
-        transition: opacity 160ms ease, transform 160ms ease;
-      }
-
-      .menu:hover .submenu {
-        opacity: 1;
-        pointer-events: auto;
-        transform: translateY(-50%) translateX(8px); /* geser dikit ke kanan saat muncul */
-      }
-
-      /* tombol emoji popup (lebih kecil sedikit) */
-      .subbtn {
-        width: 56px;
-        height: 56px;
-        font-size: 28px;
-      }
-
-      /* emoji di tengah layar */
+      /* emoji tengah */
       #centerEmoji {
         position: fixed;
         inset: 0;
@@ -179,25 +96,39 @@
         opacity: 1;
       }
 
-      /* layar status (hanya aktif setelah login) */
-      #stage {
-        position: fixed;
-        inset: 0;
-        background: #f3f4f6;
-        z-index: 0;
-      }
-      #stage.hidden {
-        display: none;
+      /* ===== THEME ala template teman (glass + tombol kotak) ===== */
+
+      .glass {
+        background: rgba(255, 255, 255, 0.15);
+        backdrop-filter: blur(10px);
       }
 
-      /* login card di atas stage */
-      #login {
-        position: relative;
-        z-index: 2;
+      .btn-sq {
+        width: 64px;
+        height: 64px;
+        border-radius: 14px;
+        display: grid;
+        place-items: center;
+        box-shadow: 0 12px 28px rgba(0, 0, 0, 0.22);
+        transition: transform 0.18s ease, box-shadow 0.18s ease;
+        padding: 0;
+      }
+      .btn-sq:hover {
+        transform: scale(1.06);
+        box-shadow: 0 16px 34px rgba(0, 0, 0, 0.28);
+      }
+      .btn-sq:active {
+        transform: scale(0.97);
+      }
+      .btn-sq:focus {
+        outline: none;
+      }
+      .btn-sq:focus-visible {
+        outline: 2px solid rgba(255, 255, 255, 0.65);
+        outline-offset: 4px;
       }
 
-      /* User Emoji Status */
-      /* panel status user (pojok kiri atas) */
+      /* ===== USER EMOJI PANEL (kiri atas) ===== */
       #userPanel {
         position: fixed;
         left: 18px;
@@ -205,73 +136,128 @@
         z-index: 10000;
         display: flex;
         flex-direction: column;
-        gap: 8px;
+        gap: 12px;
       }
-
       .userRow {
         display: flex;
         align-items: center;
         gap: 10px;
-        color: rgba(255, 255, 255, 0.92);
       }
-
       .userTag {
-        width: 64px;
-        height: 36px;
+        width: 74px;
+        height: 44px;
         border-radius: 999px;
-        border: 0;
-        background: rgba(255, 255, 255, 0.12);
-        backdrop-filter: blur(8px);
-        font-weight: 700;
+        padding: 0;
+        font-weight: 800;
+        letter-spacing: 0.2px;
         color: rgba(255, 255, 255, 0.92);
       }
-
       .userEmojiBtn {
-        width: 44px;
-        height: 44px;
+        width: 56px;
+        height: 56px;
         border-radius: 14px;
-        border: 0;
-        cursor: pointer;
-        background: rgba(255, 255, 255, 0.14);
-        backdrop-filter: blur(8px);
-        display: grid;
-        place-items: center;
-        font-size: 22px;
-        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
+        padding: 0;
+        font-size: 26px;
+        color: white;
       }
 
-      /* popup picker */
+      /* ===== emoji picker popup (grid rapi) ===== */
       #emojiPicker {
         position: fixed;
         z-index: 10001;
-        padding: 10px;
+        padding: 12px;
         border-radius: 16px;
-        background: rgba(20, 20, 20, 0.55);
-        backdrop-filter: blur(10px);
-        box-shadow: 0 18px 40px rgba(0, 0, 0, 0.25);
+        background: rgba(0, 0, 0, 0.45);
+        backdrop-filter: blur(12px);
+        box-shadow: 0 18px 40px rgba(0, 0, 0, 0.28);
 
         display: none;
-        grid-template-columns: repeat(6, 40px);
-        gap: 8px;
+        grid-template-columns: repeat(6, 44px);
+        gap: 10px;
       }
-
       #emojiPicker.show {
         display: grid;
       }
-
       .emojiOpt {
-        width: 40px;
-        height: 40px;
+        width: 44px;
+        height: 44px;
         border: 0;
         border-radius: 12px;
         cursor: pointer;
-        background: rgba(255, 255, 255, 0.12);
+        background: rgba(255, 255, 255, 0.14);
         display: grid;
         place-items: center;
         font-size: 20px;
+        transition: transform 120ms ease, background 120ms ease;
+        padding: 0;
+      }
+      .emojiOpt:hover {
+        transform: scale(1.06);
+        background: rgba(255, 255, 255, 0.2);
       }
       .emojiOpt:active {
         transform: scale(0.95);
+      }
+      .emojiOpt.active {
+        background: rgba(255, 255, 255, 0.3);
+        outline: 2px solid rgba(255, 255, 255, 0.35);
+        outline-offset: 2px;
+      }
+
+      /* ===== tombol warna (kiri bawah) ===== */
+      .btns-corner {
+        position: fixed;
+        left: 18px;
+        bottom: 18px;
+        z-index: 9999;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        align-items: flex-start;
+      }
+
+      /* wrapper tiap tombol utama + area hover ke kanan */
+      .menu {
+        position: relative;
+        padding-right: 220px; /* area hover ke kanan */
+        margin-right: -220px; /* posisi visual tetap */
+      }
+
+      /* popup ke kanan (horizontal) */
+      .submenu {
+        position: absolute;
+        left: 76px;
+        top: 50%;
+        transform: translateY(-50%);
+
+        display: flex;
+        flex-direction: row;
+        gap: 10px;
+        align-items: center;
+
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 180ms ease, transform 180ms ease;
+      }
+
+      .menu:hover .submenu {
+        opacity: 1;
+        pointer-events: auto;
+        transform: translateY(-50%) translateX(8px);
+      }
+
+      /* tombol utama warna (kotak) */
+      .mainColorBtn {
+        font-size: 22px;
+        color: white;
+      }
+
+      /* tombol popup emoji (kotak lebih kecil) */
+      .subColorBtn {
+        width: 56px;
+        height: 56px;
+        font-size: 26px;
+        color: white;
       }
     </style>
   </head>
@@ -290,34 +276,39 @@
       <!-- USER EMOJI STATUS (pojok kiri atas) -->
       <div id="userPanel">
         <div class="userRow">
-          <button class="userTag" type="button">User 1</button>
+          <button class="glass userTag" type="button">User 1</button>
           <button
-            class="userEmojiBtn"
+            class="glass btn-sq userEmojiBtn"
             id="u1"
             type="button"
             onclick="openPicker(1, this)"
+            aria-label="User 1 emoji"
           >
             🙂
           </button>
         </div>
+
         <div class="userRow">
-          <button class="userTag" type="button">User 2</button>
+          <button class="glass userTag" type="button">User 2</button>
           <button
-            class="userEmojiBtn"
+            class="glass btn-sq userEmojiBtn"
             id="u2"
             type="button"
             onclick="openPicker(2, this)"
+            aria-label="User 2 emoji"
           >
             🙂
           </button>
         </div>
+
         <div class="userRow">
-          <button class="userTag" type="button">User 3</button>
+          <button class="glass userTag" type="button">User 3</button>
           <button
-            class="userEmojiBtn"
+            class="glass btn-sq userEmojiBtn"
             id="u3"
             type="button"
             onclick="openPicker(3, this)"
+            aria-label="User 3 emoji"
           >
             🙂
           </button>
@@ -331,19 +322,31 @@
       <div class="btns-corner">
         <!-- HIJAU -->
         <div class="menu">
-          <button class="btn-circle" aria-label="Hijau">🟢</button>
+          <button
+            class="glass btn-sq mainColorBtn"
+            aria-label="Hijau"
+            type="button"
+            style="background: rgba(34, 197, 94, 0.85)"
+          >
+            🟢
+          </button>
+
           <div class="submenu">
             <button
-              class="btn-circle subbtn"
+              class="glass btn-sq subColorBtn"
               aria-label="Hijau - senyum"
               onclick="pick('green','HIJAU','😁')"
+              type="button"
+              style="background: rgba(34, 197, 94, 0.9)"
             >
               😁
             </button>
             <button
-              class="btn-circle subbtn"
+              class="glass btn-sq subColorBtn"
               aria-label="Hijau - cool"
               onclick="pick('green','HIJAU','😎')"
+              type="button"
+              style="background: rgba(22, 163, 74, 0.92)"
             >
               😎
             </button>
@@ -352,19 +355,31 @@
 
         <!-- KUNING -->
         <div class="menu">
-          <button class="btn-circle" aria-label="Kuning">🟡</button>
+          <button
+            class="glass btn-sq mainColorBtn"
+            aria-label="Kuning"
+            type="button"
+            style="background: rgba(250, 204, 21, 0.86); color: #1f2937"
+          >
+            🟡
+          </button>
+
           <div class="submenu">
             <button
-              class="btn-circle subbtn"
+              class="glass btn-sq subColorBtn"
               aria-label="Kuning - datar"
               onclick="pick('gold','KUNING','😐')"
+              type="button"
+              style="background: rgba(250, 204, 21, 0.92); color: #1f2937"
             >
               😐
             </button>
             <button
-              class="btn-circle subbtn"
+              class="glass btn-sq subColorBtn"
               aria-label="Kuning - sebal"
               onclick="pick('gold','KUNING','😒')"
+              type="button"
+              style="background: rgba(253, 224, 71, 0.92); color: #1f2937"
             >
               😒
             </button>
@@ -373,19 +388,31 @@
 
         <!-- MERAH -->
         <div class="menu">
-          <button class="btn-circle" aria-label="Merah">🔴</button>
+          <button
+            class="glass btn-sq mainColorBtn"
+            aria-label="Merah"
+            type="button"
+            style="background: rgba(239, 68, 68, 0.88)"
+          >
+            🔴
+          </button>
+
           <div class="submenu">
             <button
-              class="btn-circle subbtn"
+              class="glass btn-sq subColorBtn"
               aria-label="Merah - bahaya"
               onclick="pick('red','MERAH','‼️')"
+              type="button"
+              style="background: rgba(239, 68, 68, 0.92)"
             >
               ‼️
             </button>
             <button
-              class="btn-circle subbtn"
+              class="glass btn-sq subColorBtn"
               aria-label="Merah - panik"
               onclick="pick('red','MERAH','😱')"
+              type="button"
+              style="background: rgba(220, 38, 38, 0.92)"
             >
               😱
             </button>
@@ -394,7 +421,6 @@
       </div>
     </div>
     <div id="centerEmoji"></div>
-    <div id="flash"></div>
     <script src="/socket.io/socket.io.js"></script>
     <script>
       const socket = io();
@@ -414,20 +440,7 @@
       let lastUserEmojiState = { 1: "🙂", 2: "🙂", 3: "🙂" };
       let pickerUserId = null;
 
-      const EMOJI_OPTIONS = [
-        "🙂",
-        "😁",
-        "😎",
-        "😐",
-        "😒",
-        "😴",
-        "🤐",
-        "🤫",
-        "😶",
-        "😬",
-        "😱",
-        "🤯",
-      ]; // <-- ini daftar emoji kamu. Ganti sesuai punyamu.
+      const EMOJI_OPTIONS = [" ", "🤝🏻", "🚽", "🥪", "😴", "👷🏻‍♂️", "🎥", "📅", "💊", "🚙"]; // <-- ini daftar emoji kamu. Ganti sesuai punyamu.
 
       function apply({ color, emoji }) {
         if (!isAuthed) return;
@@ -484,17 +497,17 @@
       function openPicker(userId, anchorBtn) {
         pickerUserId = userId;
         const picker = document.getElementById("emojiPicker");
-        picker.innerHTML = EMOJI_OPTIONS.map(
-          (e) =>
-            `<button class="emojiOpt" type="button" onclick="chooseEmoji('${e.replace(
-              /'/g,
-              "&#39;"
-            )}')">${e}</button>`
-        ).join("");
+        const currentEmoji = lastUserEmojiState[userId];
+
+        picker.innerHTML = EMOJI_OPTIONS.map((e) => {
+          const active = e === currentEmoji ? "active" : "";
+          const safe = e.replace(/'/g, "&#39;");
+          return `<button class="emojiOpt ${active}" type="button" onclick="chooseEmoji('${safe}')">${e}</button>`;
+        }).join("");
 
         const r = anchorBtn.getBoundingClientRect();
         picker.style.left = `${Math.min(
-          window.innerWidth - 280,
+          window.innerWidth - 320,
           r.right + 10
         )}px`;
         picker.style.top = `${Math.max(18, r.top - 10)}px`;
@@ -551,9 +564,9 @@
         });
       }
 
-      function setStatus(color, label) {
-        socket.emit("status:set", { color, label });
-      }
+      // function setStatus(color, label) {
+      //   socket.emit("status:set", { color, label });
+      // }
 
       socket.on("useremoji:state", (state) => {
         // jangan gate pakai isAuthed; panel ada di #app (hidden saat belum login)
