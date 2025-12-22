@@ -259,6 +259,215 @@
         font-size: 26px;
         color: white;
       }
+
+      /* ===== MOBILE DOCK BASE ===== */
+      #dockMobile.dock-hidden {
+        display: none;
+      }
+
+      #dockFab {
+        position: fixed;
+        left: 18px;
+        bottom: 18px;
+        z-index: 20000;
+
+        width: 56px;
+        height: 56px;
+        border-radius: 16px;
+        border: 0;
+        cursor: pointer;
+
+        background: rgba(0, 0, 0, 0.35);
+        backdrop-filter: blur(10px);
+        color: rgba(255, 255, 255, 0.92);
+        font-size: 20px;
+        box-shadow: 0 14px 40px rgba(0, 0, 0, 0.22);
+
+        transition: transform 0.15s ease;
+      }
+      #dockFab:active {
+        transform: scale(0.96);
+      }
+
+      #dockPanel {
+        position: fixed;
+        left: 18px;
+        bottom: 86px;
+        z-index: 20000;
+
+        width: min(340px, calc(100vw - 36px));
+        border-radius: 18px;
+
+        background: rgba(0, 0, 0, 0.38);
+        backdrop-filter: blur(12px);
+        box-shadow: 0 18px 60px rgba(0, 0, 0, 0.28);
+
+        padding: 12px;
+        display: none;
+      }
+      #dockPanel.show {
+        display: block;
+      }
+
+      #dockTabs {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 10px;
+      }
+      .dockTab {
+        flex: 1;
+        border: 0;
+        border-radius: 14px;
+        padding: 10px 12px;
+        cursor: pointer;
+        font-weight: 800;
+
+        background: rgba(255, 255, 255, 0.12);
+        color: rgba(255, 255, 255, 0.88);
+      }
+      .dockTab.active {
+        background: rgba(255, 255, 255, 0.22);
+        color: rgba(255, 255, 255, 0.95);
+      }
+
+      .dockContent.hidden {
+        display: none;
+      }
+
+      .dockRow {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+      }
+      .dockSub {
+        margin-top: 10px;
+      }
+
+      /* tombol warna */
+      .dockBtn {
+        width: 64px;
+        height: 56px;
+        border-radius: 16px;
+        border: 0;
+        cursor: pointer;
+        font-size: 22px;
+
+        display: grid;
+        place-items: center;
+        color: white;
+
+        background: rgba(255, 255, 255, 0.14);
+        box-shadow: 0 12px 28px rgba(0, 0, 0, 0.18);
+      }
+      .dockBtn:active {
+        transform: scale(0.96);
+      }
+
+      .dockBtn.g {
+        background: rgba(34, 197, 94, 0.75);
+      }
+      .dockBtn.y {
+        background: rgba(250, 204, 21, 0.78);
+        color: #1f2937;
+      }
+      .dockBtn.r {
+        background: rgba(239, 68, 68, 0.78);
+      }
+
+      /* emoji pilihan warna (submenu) */
+      .dockEmojiBtn {
+        width: 56px;
+        height: 56px;
+        border-radius: 16px;
+        border: 0;
+        cursor: pointer;
+        font-size: 26px;
+
+        display: grid;
+        place-items: center;
+
+        background: rgba(255, 255, 255, 0.14);
+        box-shadow: 0 12px 28px rgba(0, 0, 0, 0.18);
+      }
+      .dockEmojiBtn:active {
+        transform: scale(0.96);
+      }
+
+      /* USER list */
+      .dockUserList {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .dockUserBtn {
+        width: 100%;
+        border: 0;
+        cursor: pointer;
+        padding: 10px 12px;
+        border-radius: 16px;
+
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+
+        background: rgba(255, 255, 255, 0.12);
+        color: rgba(255, 255, 255, 0.92);
+      }
+      .dockUserBtn:active {
+        transform: scale(0.99);
+      }
+
+      .dockUserTag {
+        font-weight: 900;
+        letter-spacing: 0.2px;
+      }
+      .dockUserEmoji {
+        font-size: 22px;
+      }
+
+      /* grid emoji 11 */
+      .dockGrid {
+        margin-top: 10px;
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 10px;
+      }
+
+      .dockGrid .emojiOptMobile {
+        height: 44px;
+        border-radius: 14px;
+        border: 0;
+        cursor: pointer;
+        background: rgba(255, 255, 255, 0.14);
+        display: grid;
+        place-items: center;
+        font-size: 20px;
+      }
+      .dockGrid .emojiOptMobile:active {
+        transform: scale(0.96);
+      }
+      .dockGrid .emojiOptMobile.active {
+        background: rgba(255, 255, 255, 0.26);
+        outline: 2px solid rgba(255, 255, 255, 0.28);
+        outline-offset: 2px;
+      }
+
+      /* ===== RESPONSIVE RULE: HP pakai dock, desktop UI disembunyikan ===== */
+      @media (max-width: 640px) {
+        /* sembunyikan UI desktop */
+        #userPanel {
+          display: none !important;
+        }
+        .btns-corner {
+          display: none !important;
+        }
+
+        /* tampilkan dock */
+        #dockMobile.dock-hidden {
+          display: block;
+        }
+      }
     </style>
   </head>
   <body>
@@ -339,16 +548,16 @@
               type="button"
               style="background: rgba(34, 197, 94, 0.9)"
             >
-              🚪
+              🚶🏻‍♂️
             </button>
             <button
               class="glass btn-sq subColorBtn"
               aria-label="Hijau - cool"
-              onclick="pick('green','HIJAU','⌨')"
+              onclick="pick('green','HIJAU','👨🏻‍💻')"
               type="button"
               style="background: rgba(22, 163, 74, 0.92)"
             >
-              ⌨
+              👨🏻‍💻
             </button>
           </div>
         </div>
@@ -368,20 +577,20 @@
             <button
               class="glass btn-sq subColorBtn"
               aria-label="Kuning - datar"
-              onclick="pick('gold','KUNING','😐')"
+              onclick="pick('gold','KUNING','🤐')"
               type="button"
               style="background: rgba(250, 204, 21, 0.92); color: #1f2937"
             >
-              😐🚶🏻‍♂️
+              🤐
             </button>
             <button
               class="glass btn-sq subColorBtn"
               aria-label="Kuning - sebal"
-              onclick="pick('gold','KUNING','😒')"
+              onclick="pick('gold','KUNING','👀')"
               type="button"
               style="background: rgba(253, 224, 71, 0.92); color: #1f2937"
             >
-              😐⌨
+              👀
             </button>
           </div>
         </div>
@@ -419,6 +628,76 @@
           </div>
         </div>
       </div>
+
+      <!-- ===== MOBILE FLOATING DOCK (HP) ===== -->
+      <div id="dockMobile" class="dock-hidden">
+        <!-- tombol floating -->
+        <button id="dockFab" type="button" aria-label="Menu">☰</button>
+
+        <!-- panel -->
+        <div id="dockPanel" aria-hidden="true">
+          <div id="dockTabs">
+            <button type="button" class="dockTab active" data-tab="warna">
+              Warna
+            </button>
+            <button type="button" class="dockTab" data-tab="user">User</button>
+          </div>
+
+          <!-- TAB: WARNA -->
+          <div class="dockContent" id="tab-warna">
+            <div class="dockRow">
+              <button
+                class="dockBtn g"
+                type="button"
+                data-color="green"
+                data-label="HIJAU"
+              >
+                🟢
+              </button>
+              <button
+                class="dockBtn y"
+                type="button"
+                data-color="gold"
+                data-label="KUNING"
+              >
+                🟡
+              </button>
+              <button
+                class="dockBtn r"
+                type="button"
+                data-color="red"
+                data-label="MERAH"
+              >
+                🔴
+              </button>
+            </div>
+
+            <!-- emoji options (muncul setelah pilih warna) -->
+            <div class="dockRow dockSub" id="warnaSub"></div>
+          </div>
+
+          <!-- TAB: USER -->
+          <div class="dockContent hidden" id="tab-user">
+            <div class="dockUserList">
+              <button class="dockUserBtn" type="button" data-user="1">
+                <span class="dockUserTag">User 1</span>
+                <span class="dockUserEmoji" id="mU1">🙂</span>
+              </button>
+              <button class="dockUserBtn" type="button" data-user="2">
+                <span class="dockUserTag">User 2</span>
+                <span class="dockUserEmoji" id="mU2">🙂</span>
+              </button>
+              <button class="dockUserBtn" type="button" data-user="3">
+                <span class="dockUserTag">User 3</span>
+                <span class="dockUserEmoji" id="mU3">🙂</span>
+              </button>
+            </div>
+
+            <!-- grid emoji 11 (muncul setelah pilih user) -->
+            <div id="userGrid" class="dockGrid hidden"></div>
+          </div>
+        </div>
+      </div>
     </div>
     <div id="centerEmoji"></div>
     <script src="/socket.io/socket.io.js"></script>
@@ -440,7 +719,18 @@
       let lastUserEmojiState = { 1: "🙂", 2: "🙂", 3: "🙂" };
       let pickerUserId = null;
 
-      const EMOJI_OPTIONS = ["💻", "🤝🏻", "🚽", "🥪", "😴", "☪" , "👷🏻‍♂️", "🎥", "📅", "💊", "🚙"]; // <-- ini daftar emoji kamu. Ganti sesuai punyamu.
+      const EMOJI_OPTIONS = [
+        "💻",
+        "📝",
+        "🚽",
+        "😴",
+        "☪",
+        "⚙",
+        "🎥",
+        "📅",
+        "💊",
+        "🚙",
+      ]; // <-- ini daftar emoji kamu. Ganti sesuai punyamu.
 
       function apply({ color, emoji }) {
         if (!isAuthed) return;
@@ -492,6 +782,7 @@
           lastUserEmojiState[2] || " ";
         document.getElementById("u3").textContent =
           lastUserEmojiState[3] || " ";
+        renderMobileUsers();
       }
 
       function openPicker(userId, anchorBtn) {
@@ -563,6 +854,213 @@
           }
         });
       }
+
+      // ===== MOBILE DOCK LOGIC =====
+      const DOCK = {
+        open: false,
+        tab: "warna",
+        selectedUser: null,
+        selectedColor: null,
+      };
+
+      // emoji submenu untuk tiap warna (samakan dengan desktop kamu)
+      const COLOR_EMOJI = {
+        green: ["🚶🏻‍♂️", "👨🏻‍💻"],
+        gold: ["👀", "🤐"],
+        red: ["‼️", "😱"],
+      };
+
+      // update emoji di dock USER (kiri bawah)
+      function renderMobileUsers() {
+        const u1 = document.getElementById("mU1");
+        const u2 = document.getElementById("mU2");
+        const u3 = document.getElementById("mU3");
+        if (!u1 || !u2 || !u3) return;
+        u1.textContent = lastUserEmojiState[1] || "🙂";
+        u2.textContent = lastUserEmojiState[2] || "🙂";
+        u3.textContent = lastUserEmojiState[3] || "🙂";
+      }
+
+      function dockOpen() {
+        DOCK.open = true;
+        const panel = document.getElementById("dockPanel");
+        panel.classList.add("show");
+        panel.setAttribute("aria-hidden", "false");
+
+        // default tab WARNA
+        dockSetTab("warna");
+        dockRenderWarnaSub(null);
+        DOCK.selectedUser = null;
+        dockRenderUserGrid(null);
+      }
+
+      function dockClose() {
+        DOCK.open = false;
+        const panel = document.getElementById("dockPanel");
+        panel.classList.remove("show");
+        panel.setAttribute("aria-hidden", "true");
+
+        DOCK.selectedUser = null;
+        DOCK.selectedColor = null;
+      }
+
+      function dockToggle() {
+        if (DOCK.open) dockClose();
+        else dockOpen();
+      }
+
+      function dockSetTab(tab) {
+        DOCK.tab = tab;
+
+        // tabs style
+        document.querySelectorAll(".dockTab").forEach((btn) => {
+          btn.classList.toggle("active", btn.dataset.tab === tab);
+        });
+
+        // content
+        document
+          .getElementById("tab-warna")
+          .classList.toggle("hidden", tab !== "warna");
+        document
+          .getElementById("tab-user")
+          .classList.toggle("hidden", tab !== "user");
+
+        // reset sub-views
+        if (tab === "warna") {
+          dockRenderWarnaSub(null);
+          DOCK.selectedColor = null;
+        } else {
+          DOCK.selectedUser = null;
+          dockRenderUserGrid(null);
+          renderMobileUsers();
+        }
+      }
+
+      // render submenu emoji untuk warna yang dipilih
+      function dockRenderWarnaSub(color) {
+        const sub = document.getElementById("warnaSub");
+        if (!sub) return;
+
+        if (!color) {
+          sub.innerHTML = "";
+          return;
+        }
+
+        const emojis = COLOR_EMOJI[color] || [];
+        sub.innerHTML = emojis
+          .map(
+            (e) =>
+              `<button class="dockEmojiBtn" type="button" data-emoji="${e}">${e}</button>`
+          )
+          .join("");
+
+        // klik emoji -> trigger pick -> auto close
+        sub.querySelectorAll(".dockEmojiBtn").forEach((btn) => {
+          btn.addEventListener("click", () => {
+            const emoji = btn.dataset.emoji;
+            // label sesuai color
+            const label =
+              color === "green"
+                ? "HIJAU"
+                : color === "gold"
+                ? "KUNING"
+                : "MERAH";
+            pick(color, label, emoji);
+            dockClose(); // AUTO CLOSE (sesuai kamu)
+          });
+        });
+      }
+
+      // render grid 11 emoji untuk user yang dipilih
+      function dockRenderUserGrid(userId) {
+        const grid = document.getElementById("userGrid");
+        if (!grid) return;
+
+        if (!userId) {
+          grid.classList.add("hidden");
+          grid.innerHTML = "";
+          return;
+        }
+
+        const current = lastUserEmojiState[userId];
+        grid.classList.remove("hidden");
+        grid.innerHTML = EMOJI_OPTIONS.map((e) => {
+          const active = e === current ? "active" : "";
+          return `<button class="emojiOptMobile ${active}" type="button" data-emoji="${e}">${e}</button>`;
+        }).join("");
+
+        grid.querySelectorAll(".emojiOptMobile").forEach((btn) => {
+          btn.addEventListener("click", () => {
+            const emoji = btn.dataset.emoji;
+
+            // update lokal cepat
+            lastUserEmojiState[userId] = emoji;
+            renderMobileUsers();
+
+            // update desktop panel juga kalau ada
+            if (document.getElementById("u1")) {
+              document.getElementById("u1").textContent =
+                lastUserEmojiState[1] || " ";
+              document.getElementById("u2").textContent =
+                lastUserEmojiState[2] || " ";
+              document.getElementById("u3").textContent =
+                lastUserEmojiState[3] || " ";
+            }
+
+            // broadcast realtime ke semua
+            socket.emit("useremoji:set", { userId, emoji });
+
+            // AUTO CLOSE (sesuai kamu)
+            dockClose();
+          });
+        });
+      }
+
+      // inisialisasi event dock setelah DOM siap
+      window.addEventListener("DOMContentLoaded", () => {
+        const fab = document.getElementById("dockFab");
+        const panel = document.getElementById("dockPanel");
+        if (!fab || !panel) return;
+
+        // tombol floating
+        fab.addEventListener("click", (e) => {
+          e.stopPropagation();
+          dockToggle();
+        });
+
+        // klik di luar panel = tutup
+        document.addEventListener("click", (e) => {
+          if (!DOCK.open) return;
+          const inside = panel.contains(e.target) || fab.contains(e.target);
+          if (!inside) dockClose();
+        });
+
+        // tabs
+        document.querySelectorAll(".dockTab").forEach((btn) => {
+          btn.addEventListener("click", () => dockSetTab(btn.dataset.tab));
+        });
+
+        // tombol warna utama
+        document.querySelectorAll("#tab-warna .dockBtn").forEach((btn) => {
+          btn.addEventListener("click", () => {
+            const color = btn.dataset.color;
+            DOCK.selectedColor = color;
+            dockRenderWarnaSub(color);
+          });
+        });
+
+        // tombol user
+        document.querySelectorAll(".dockUserBtn").forEach((btn) => {
+          btn.addEventListener("click", () => {
+            const userId = Number(btn.dataset.user);
+            DOCK.selectedUser = userId;
+            dockRenderUserGrid(userId);
+          });
+        });
+
+        // pertama kali sync tampilan
+        renderMobileUsers();
+      });
 
       // function setStatus(color, label) {
       //   socket.emit("status:set", { color, label });
